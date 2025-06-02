@@ -18,7 +18,7 @@ def get_vehicles():
 	else:
 		return app.get_vehicles(params)
 	
-@api.route('/veiculos/<int:id>', methods=['GET'])
+@api.route('/veiculos/<string:id>', methods=['GET'])
 def get_vehicle_by_id(id):
     return app.get_vehicles({"id":id})
 
@@ -27,17 +27,18 @@ def add_vehicle():
 	data = request.get_json()
 	return app.add_vehicle(data) # 201
 
-@api.route('/veiculos/<int:id>', methods=['PUT'])
+@api.route('/veiculos/<string:id>', methods=['PUT'])
 def update_complete_vehicle(id):
 	data = request.get_json()
+	app.check_complete_payload(data)
 	return app.update_vehicle(data, id)
 
-@api.route('/veiculos/<int:id>', methods=['PATCH'])
+@api.route('/veiculos/<string:id>', methods=['PATCH'])
 def update_vehicle(id):
     data = request.get_json()
     return app.update_vehicle(data, id)
 
-@api.route('/veiculos/<int:id>', methods=['DELETE'])
+@api.route('/veiculos/<string:id>', methods=['DELETE'])
 def delete_veiculo(id):
     return app.delete_vehicle(id)
 
