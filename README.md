@@ -19,10 +19,18 @@ Este projeto é um desafio da **Tinnova** e consiste vários scripts para resolu
    pip install -r requirements.txt
    ```
 
-3. Inicie a aplicação:
+3. Rode o arquivo do desafio desejado:
    ```bash
+   python3 src/voting.py
+   python3 src/bubble_sort.py
+   python3 src/factorial.py
+   python3 src/3_5_mult_sum.py
    python3 src/server.py
    ```
+
+## Sobre os primeiros 4 desafios
+
+São arquivos simples, só com o necessário pra execução. Não há necessidade de importar nenhuma biblioteca.
 
 ## Sobre o cadastro de veículos (5)
 
