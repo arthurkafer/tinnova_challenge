@@ -1,4 +1,4 @@
-def mult_checker(div):
+def mult_checker(div): # funcao dinamica pra checagem de multiplos de x valor
     return lambda x: x % div == 0
 
 def sum_of_multiples(list_until):
