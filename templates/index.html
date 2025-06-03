@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Sales Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Car Sales Dashboard</h1>
+        </header>
+
+        <section class="filters-section">
+            <h2>Filter Vehicles</h2>
+            <form method="GET" action="{{ url_for('index') }}">
+                <input type="text" name="veiculo" placeholder="Vehicle Name" value="{{ filters.veiculo if filters else '' }}">
+                <input type="text" name="marca" placeholder="Brand" value="{{ filters.marca if filters else '' }}">
+                <input type="number" name="ano" placeholder="Year" value="{{ filters.ano if filters else '' }}">
+                <button type="submit">Filter</button>
+                <a href="{{ url_for('index') }}" class="clear-filter-button">Clear Filters</a>
+            </form>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h2>Vehicles For Sale</h2>
+                <p>{{ unsold_vehicles_count }}</p>
+            </div>
+            <div class="stat-card">
+                <h2>Total Vehicles</h2>
+                <p>{{ total_vehicles_count }}</p>
+            </div>
+            <div class="stat-card">
+                <h2>Unique Brands</h2>
+                <p>{{ unique_brands_count }}</p>
+            </div>
+            <div class="stat-card">
+                <h2>Registered Last Week</h2>
+                <p>{{ vehicles_registered_last_week_count }}</p>
+            </div>
+        </section>
+
+        <section class="charts-grid">
+            <div class="chart-container">
+                <h3>Distribution by Decade</h3>
+                <canvas id="decadeChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Distribution by Brand</h3>
+                <canvas id="brandChart"></canvas>
+            </div>
+        </section>
+        
+        <section>
+            <h2>Vehicles Registered Last Week ({{ vehicles_registered_last_week_count }})</h2>
+            {% if vehicles_registered_last_week %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Brand</th>
+                        <th>Year</th>
+                        <th>Registered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles_registered_last_week %}
+                    <tr>
+                        <td>{{ vehicle.veiculo }}</td>
+                        <td>{{ vehicle.marca }}</td>
+                        <td>{{ vehicle.ano }}</td>
+                        <td>{{ vehicle.created.split(' ')[0] }}</td> 
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No vehicles registered in the last 7 days.</p>
+            {% endif %}
+        </section>
+
+        <section class="add-form-section">
+            <h2>Add New Vehicle</h2>
+            <form id="add-vehicle-form">
+                <input type="text" name="veiculo" placeholder="Vehicle Name" required>
+                <input type="text" name="marca" placeholder="Brand" required>
+                <input type="number" name="ano" placeholder="Year" required id="year">
+                <input type="text" name="cor" placeholder="Color" required>
+                <input type="text" name="descricao" placeholder="Description" required>
+                <label>
+                    <input type="checkbox" name="vendido">
+                    Sold
+                </label>
+                <button type="submit">Add Vehicle</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Vehicle Inventory ({{ vehicles|length }})</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Brand</th>
+                        <th>Year</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                    <tr>
+                        <td>{{ vehicle.veiculo }}</td>
+                        <td>{{ vehicle.marca }}</td>
+                        <td>{{ vehicle.ano }}</td>
+                        <td>{{ vehicle.descricao }}</td>
+                        <td>
+                            <button type="submit" data-id="{{ vehicle.id }}" data-vendido="{{ 'false' if vehicle.vendido else 'true' }}" class="status-button {{ 'sold' if vehicle.vendido else 'for-sale' }}">
+                                {{ 'Sold' if vehicle.vendido else 'For Sale' }}
+                            </button>
+                        </td>
+                        <td class="actions">
+                            <a href="{{ url_for('edit_vehicle_page', id=vehicle.id) }}" class="action-button edit">Edit</a>
+                            <form action="{{ url_for('delete_veiculo', id=vehicle.id) }}" style="display: inline;">
+                                <button data-id="{{ vehicle.id }}" type="submit" class="action-button delete">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No vehicles found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <footer>
+            <p>&copy; dashboard simples</p>
+        </footer>
+    </div>
+    <script>
+        // Pass current year to JS if needed, or set directly in HTML for max year in form
+        const currentYear = new Date().getFullYear();
+        // Set max year for year input
+        const yearInput = document.getElementById('ano');
+        if (yearInput) {
+            yearInput.max = currentYear + 1;
+        }
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Vehicle</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 2em;
+            background: #f4f4f4;
+        }
+        form {
+            background: white;
+            padding: 1em 2em;
+            border-radius: 8px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 1em;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 0.5em;
+            margin-top: 0.3em;
+        }
+        button {
+            margin-top: 1.5em;
+            padding: 0.7em 1.2em;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        a.cancel {
+            margin-left: 1em;
+            color: #555;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Vehicle</h1>
+
+    <form id="edit-vehicle-form" action="{{ url_for('update_complete_vehicle', id=vehicle.id) }}">
+        <label for="veiculo">Vehicle Name:</label>
+        <input type="text" id="veiculo" name="vehicleName" value="{{ vehicle.veiculo }}" required>
+
+        <label for="marca">Brand:</label>
+        <input type="text" id="marca" name="brand" value="{{ vehicle.marca }}" required>
+
+        <label for="ano">Year:</label>
+        <input type="number" id="ano" name="year" value="{{ vehicle.ano }}" required min="1886">
+
+        <label for="descricao">Description:</label>
+        <textarea id="descricao" name="description">{{ vehicle.descricao }}</textarea>
+
+        <label for="cor">Cor:</label>
+        <textarea id="cor" name="color">{{ vehicle.cor }}</textarea>
+
+        <label>
+            <input type="checkbox" id="vendido" name="sold" {% if vehicle.vendido %}checked{% endif %}>
+            Mark as Sold
+        </label>
+
+        <button type="submit" class="edit-button delete">Update Vehicle</button>
+        <a href="{{ url_for('index') }}" class="cancel">Cancel</a>
+    </form>
+
+</body>
+</html>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const editForm = document.getElementById('edit-vehicle-form');
+    if (editForm) {
+        editForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(editForm);
+            const payload = {
+                veiculo: formData.get('vehicleName'),
+                marca: formData.get('brand'),
+                ano: parseInt(formData.get('year')),
+                descricao: formData.get('description'),
+                cor: formData.get('color'),
+                vendido: formData.get('sold') === 'on'
+            };
+
+            const actionUrl = editForm.getAttribute('action');
+
+            fetch(actionUrl, {
+                method: 'PUT', 
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to update vehicle");
+                return res.json();
+            })
+            .then(() => {
+                alert("Vehicle updated successfully!");
+                window.location.href = '/'; // Redirect to home or list page
+            })
+            .catch(err => {
+                console.error("Update failed:", err);
+                alert("Failed to update vehicle.");
+            });
+        });
+    }
+});
+
+</script>

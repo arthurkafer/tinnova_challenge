@@ -110,6 +110,9 @@ class CarsApp():
         updated_vehicle["updated"] = datetime.strftime(datetime.now(),"%Y-%m-%dT%H:%M:%S")
         for item in vehicle_data:
             updated_vehicle[item] = vehicle_data[item]
+        
+        idx = self.indexof_key_in_list(self.database, "id", id)
+        self.database[idx] = updated_vehicle
         return updated_vehicle
     
     def delete_vehicle(self, id):
